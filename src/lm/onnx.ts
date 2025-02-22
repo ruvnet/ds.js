@@ -54,25 +54,23 @@ export class ONNXModel implements LMDriver {
   /**
    * Generate text using the ONNX model
    */
-  public async generate(prompt: string, options?: GenerationOptions): Promise<string> {
+  public async run(inputs: Record<string, any>): Promise<Record<string, any>> {
     if (!this.session) {
       throw new LMError('ONNX model not initialized. Call init() first.');
     }
 
     try {
-      // Convert prompt to input tensor
-      const inputTensor = await this.prepareInput(prompt);
+      // Convert inputs to tensors
+      const inputTensors = await this.prepareInputs(inputs);
 
       // Run inference
-      const outputs = await this.session.run({
-        input: inputTensor
-      });
+      const outputs = await this.session.run(inputTensors);
 
-      // Process output tensor to text
-      if (!outputs.output || typeof outputs.output !== 'object') {
+      // Process output tensors
+      if (!outputs || typeof outputs !== 'object') {
         throw new LMError('Invalid output tensor format');
       }
-      return this.processOutput(outputs, options);
+      return outputs;
     } catch (error) {
       throw new LMError('ONNX model inference failed', error as Error);
     }
@@ -110,24 +108,27 @@ export class ONNXModel implements LMDriver {
   /**
    * Prepare input tensor from prompt text
    */
-  private async prepareInput(prompt: string): Promise<ort.Tensor> {
-    // For MVP, create a simple tensor from the prompt length
-    // This will be replaced with actual tokenization in future phases
-    const inputData = new Float32Array([prompt.length]);
-    return new ort.Tensor('float32', inputData, [1, 1]);
+  private async prepareInputs(inputs: Record<string, any>): Promise<Record<string, ort.Tensor>> {
+    const tensors: Record<string, ort.Tensor> = {};
+    
+    for (const [name, value] of Object.entries(inputs)) {
+      if (value instanceof Float32Array) {
+        tensors[name] = new ort.Tensor('float32', value, [1, value.length]);
+      } else if (typeof value === 'string') {
+        const inputData = new Float32Array([value.length]);
+        tensors[name] = new ort.Tensor('float32', inputData, [1, 1]);
+      } else {
+        throw new LMError(`Unsupported input type for ${name}`);
+      }
+    }
+
+    return tensors;
   }
 
   /**
    * Process output tensor to text
    */
-  private processOutput(outputs: Record<string, ort.Tensor>, options?: GenerationOptions): string {
-    // For MVP, return a simple string based on the output tensor
-    // This will be replaced with actual detokenization in future phases
-    const outputTensor = outputs['output'];
-    if (!outputTensor || !outputTensor.dims || !outputTensor.data) {
-      throw new LMError('Missing or invalid output tensor');
-    }
-    const shape = outputTensor.dims.join('x');
-    return `ONNX model output (shape: ${shape})`;
+  public async generate(prompt: string, options?: GenerationOptions): Promise<string> {
+    throw new LMError('Text generation not supported by this model');
   }
 }
