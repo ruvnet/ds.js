@@ -63,5 +63,15 @@
 3. "Implement pipeline executor with comprehensive tests"
 4. "Export core components from index file"
 
+## Dependencies Added
+
+### 1. ML Dependencies
+- Added onnxruntime-web for ONNX model support
+- Added js-pytorch for PyTorch model support
+- Updated install.sh to include required system dependencies:
+  - Added libgl1-mesa-dev for OpenGL support
+  - Created separate ML dependencies installation step
+- Verified successful installation and compilation
+
 ## Next Steps
 Ready to proceed with Phase 3: LM Driver & DummyLM implementation

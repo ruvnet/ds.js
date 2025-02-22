@@ -36,5 +36,9 @@
     "prettier": "^3.5.2",
     "ts-jest": "^29.2.5",
     "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "js-pytorch": "^0.7.2",
+    "onnxruntime-web": "^1.20.1"
   }
 }
