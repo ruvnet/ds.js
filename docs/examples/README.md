@@ -24,6 +24,13 @@ Implement a classification system that can:
 - Use ensemble methods
 - Handle multiple models
 
+### 4. [ReAct Agent](react/README.md)
+Create an agent that can:
+- Use tools to solve complex tasks
+- Follow the ReAct (Reasoning + Acting) pattern
+- Chain multiple tools together
+- Handle multi-step reasoning
+
 ## Common Patterns
 
 All examples demonstrate key DSPy.ts concepts:
