@@ -2,6 +2,8 @@
 
 DSPy.ts is a TypeScript port of Stanford's DSPy framework, bringing its powerful capabilities to the JavaScript ecosystem. As a complete port of DSPy, it maintains the core philosophy of programming—not prompting—language models while adding TypeScript's type safety, local inference capabilities, and enterprise-ready features.
 
+**created by rUv, cause he could.**
+
 ## What is DSPy.ts?
 
 DSPy.ts stands for **Declarative Self-improving TypeScript**. It transforms how you build AI applications by:
