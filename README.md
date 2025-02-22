@@ -1,6 +1,6 @@
 # DSPy.ts 🚀
 
-DSPy.ts is a TypeScript port of Stanford's DSPy framework, bringing its powerful capabilities to the JavaScript ecosystem. As a complete port of DSPy, it maintains the core philosophy of programming—not prompting—language models while adding TypeScript's type safety, local inference capabilities, and enterprise-ready features.
+DSPy.ts is a TypeScript port of Stanford's DSPy framework, bringing its powerful capabilities to the JavaScript ecosystem. As a complete port of DSPy, it maintains the core philosophy of programming—not prompting—language models while adding TypeScript's type safety and enterprise-ready features. What sets DSPy.ts apart is its ability to run complete neural network models directly in the client browser, enabling sophisticated AI capabilities without server-side dependencies.
 
 **created by rUv, cause he could.**
 
@@ -17,7 +17,7 @@ DSPy.ts stands for **Declarative Self-improving TypeScript**. It transforms how 
 1. **Moving Beyond Prompts**: Instead of crafting brittle prompts, you write clean, composable TypeScript code
 2. **Self-Improvement**: Your systems automatically learn and optimize based on your metrics
 3. **Type Safety**: Catch errors early with TypeScript's static typing
-4. **Local & Cloud Flexibility**: Run models locally with ONNX/PyTorch or use cloud providers
+4. **Local & Cloud Flexibility**: Run complete neural networks locally in the browser with ONNX/PyTorch or use cloud providers
 
 ## Integrations & Ecosystem
 
@@ -163,7 +163,7 @@ const cloudLM = new OpenRouterLM(API_KEY);
 
 ### 3. Local Inference
 - ONNX Runtime integration
-- js-pytorch support
+- Complete neural network execution in browser
 - Browser and Node.js compatibility
 
 ### 4. Enterprise Ready
