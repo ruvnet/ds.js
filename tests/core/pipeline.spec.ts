@@ -1,138 +1,119 @@
+import { Pipeline, PipelineConfig } from '../../src/core/pipeline';
 import { Module } from '../../src/core/module';
-import { runPipeline, PipelineConfig } from '../../src/core/pipeline';
+import { PredictModule } from '../../src/modules/predict';
+import { configureLM } from '../../src/index';
+import { DummyLM } from '../../src/lm/dummy';
 
-// Test modules for pipeline testing
-class UppercaseModule extends Module<{ text: string }, { upper: string }> {
-  constructor() {
-    super({
-      name: 'UppercaseModule',
-      signature: {
-        inputs: [{ name: 'text', type: 'string', required: true }],
-        outputs: [{ name: 'upper', type: 'string', required: true }]
-      },
-      promptTemplate: ({ text }) => text,
-      strategy: 'Predict'
-    });
-  }
+describe('Pipeline', () => {
+  beforeAll(async () => {
+    // Configure and initialize DummyLM with specific responses
+    const dummyLM = new DummyLM(new Map([
+      ['hello', 'HELLO'],
+      ['HELLO', 'Processed: HELLO'],
+      ['{"output": "Success"}', '{"output": "Success"}']
+    ]));
+    await dummyLM.init(); // Initialize the LM
+    configureLM(dummyLM);
+  });
 
-  async run(input: { text: string }): Promise<{ upper: string }> {
-    this.validateInput(input);
-    const result = { upper: input.text.toUpperCase() };
-    this.validateOutput(result);
-    return result;
-  }
-}
-
-class PrefixModule extends Module<{ upper: string }, { result: string }> {
-  constructor() {
-    super({
-      name: 'PrefixModule',
-      signature: {
-        inputs: [{ name: 'upper', type: 'string', required: true }],
-        outputs: [{ name: 'result', type: 'string', required: true }]
-      },
-      promptTemplate: ({ upper }) => upper,
-      strategy: 'Predict'
-    });
-  }
-
-  async run(input: { upper: string }): Promise<{ result: string }> {
-    this.validateInput(input);
-    const result = { result: `PREFIX_${input.upper}` };
-    this.validateOutput(result);
-    return result;
-  }
-}
-
-class ErrorModule extends Module<any, any> {
-  constructor() {
-    super({
-      name: 'ErrorModule',
-      signature: {
-        inputs: [{ name: 'any', type: 'string' }],
-        outputs: [{ name: 'any', type: 'string' }]
-      },
-      promptTemplate: () => '',
-      strategy: 'Predict'
-    });
-  }
-
-  async run(): Promise<any> {
-    throw new Error('Test error');
-  }
-}
-
-describe('Pipeline Executor', () => {
   it('should execute modules in sequence', async () => {
-    const modules = [
-      new UppercaseModule(),
-      new PrefixModule()
-    ];
+    const module1 = new PredictModule({
+      name: 'Module1',
+      signature: {
+        inputs: [{ name: 'text', type: 'string' }],
+        outputs: [{ name: 'upper', type: 'string' }]
+      },
+      promptTemplate: ({ text }) => text
+    });
 
-    const result = await runPipeline(modules, { text: 'hello' });
-    expect(result).toEqual({ result: 'PREFIX_HELLO' });
+    const module2 = new PredictModule({
+      name: 'Module2',
+      signature: {
+        inputs: [{ name: 'upper', type: 'string' }],
+        outputs: [{ name: 'result', type: 'string' }]
+      },
+      promptTemplate: ({ upper }) => upper
+    });
+
+    const pipeline = new Pipeline([module1, module2]);
+    const result = await pipeline.run({ text: 'hello' });
+
+    expect(result.success).toBe(true);
+    expect(result.steps).toHaveLength(2);
+    expect(result.steps[0].moduleName).toBe('Module1');
+    expect(result.steps[1].moduleName).toBe('Module2');
+    expect(result.finalOutput.result).toBe('Processed: HELLO');
   });
 
   it('should handle errors according to config', async () => {
-    const modules = [new ErrorModule()];
+    const errorModule = new PredictModule({
+      name: 'ErrorModule',
+      signature: {
+        inputs: [{ name: 'input', type: 'string' }],
+        outputs: [{ name: 'output', type: 'string' }]
+      },
+      promptTemplate: () => { throw new Error('Test error'); }
+    });
 
-    // Should throw with stopOnError: true
-    await expect(runPipeline(modules, {}, { stopOnError: true }))
-      .rejects
-      .toThrow('Test error');
+    // With stopOnError: true
+    const strictPipeline = new Pipeline([errorModule], { stopOnError: true });
+    const strictResult = await strictPipeline.run({ input: 'test' });
+    expect(strictResult.success).toBe(false);
+    expect(strictResult.error).toBeDefined();
+    expect(strictResult.error?.message).toContain('Test error');
 
-    // Should not throw with stopOnError: false
-    const result = await runPipeline(modules, {}, { stopOnError: false });
-    expect(result).toEqual({});
+    // With stopOnError: false
+    const lenientPipeline = new Pipeline([errorModule], { stopOnError: false });
+    const lenientResult = await lenientPipeline.run({ input: 'test' });
+    expect(lenientResult.steps[0].error).toBeDefined();
+    expect(lenientResult.finalOutput).toEqual({ input: 'test' });
   });
 
-  it('should log debug information when debug is enabled', async () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-    const modules = [new UppercaseModule()];
+  it('should support retry logic', async () => {
+    let attempts = 0;
+    const retryModule = new PredictModule({
+      name: 'RetryModule',
+      signature: {
+        inputs: [{ name: 'input', type: 'string' }],
+        outputs: [{ name: 'output', type: 'string' }]
+      },
+      promptTemplate: () => {
+        attempts++;
+        if (attempts === 1) throw new Error('First attempt fails');
+        return '{"output": "Success"}';
+      }
+    });
 
-    await runPipeline(modules, { text: 'test' }, { debug: true });
+    const pipeline = new Pipeline([retryModule], {
+      maxRetries: 1,
+      retryDelay: 100,
+      debug: true // Enable debug mode to test logging
+    });
 
-    expect(consoleSpy).toHaveBeenCalledWith('Running module: UppercaseModule');
-    expect(consoleSpy).toHaveBeenCalledWith('Input:', { text: 'test' });
-    expect(consoleSpy).toHaveBeenCalledWith('Output:', { upper: 'TEST' });
+    const result = await pipeline.run({ input: 'test' });
+    expect(result.success).toBe(true);
+    expect(attempts).toBe(2);
+    expect(result.finalOutput.output).toBe('Success');
+  });
 
+  it('should log debug messages when debug mode is enabled', async () => {
+    const consoleSpy = jest.spyOn(console, 'log');
+    const errorModule = new PredictModule({
+      name: 'DebugModule',
+      signature: {
+        inputs: [{ name: 'input', type: 'string' }],
+        outputs: [{ name: 'output', type: 'string' }]
+      },
+      promptTemplate: () => { throw new Error('Debug test error'); }
+    });
+
+    const pipeline = new Pipeline([errorModule], { 
+      debug: true,
+      maxRetries: 1
+    });
+    await pipeline.run({ input: 'test' });
+
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('[Pipeline Debug]'));
     consoleSpy.mockRestore();
-  });
-
-  it('should log errors when stopOnError is false', async () => {
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-    const modules = [new ErrorModule()];
-
-    await runPipeline(modules, {}, { stopOnError: false });
-
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Error in module ErrorModule:',
-      new Error('Test error')
-    );
-
-    consoleErrorSpy.mockRestore();
-  });
-
-  it('should use default config when none provided', async () => {
-    const modules = [new UppercaseModule()];
-    const result = await runPipeline(modules, { text: 'test' });
-    expect(result).toEqual({ upper: 'TEST' });
-  });
-
-  it('should validate module inputs and outputs', async () => {
-    const modules = [
-      new UppercaseModule(),
-      new PrefixModule()
-    ];
-
-    // Invalid input type
-    await expect(runPipeline(modules, { text: 123 as any }))
-      .rejects
-      .toThrow('Invalid input: text must be of type string');
-
-    // Missing required input
-    await expect(runPipeline(modules, {}))
-      .rejects
-      .toThrow('Missing required input field: text');
   });
 });
