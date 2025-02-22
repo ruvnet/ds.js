@@ -13,8 +13,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/dspy.ts.git"
+    "url": "https://github.com/ruvnet/dspy.ts.git"
   },
+  "homepage": "https://github.com/ruvnet/dspy.ts",
   "keywords": [
     "dspy.ts",
     "declarative",
@@ -24,7 +25,7 @@
     "self-learning",
     "pipeline"
   ],
-  "author": "Your Name",
+  "author": "rUv",
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^29.5.14",

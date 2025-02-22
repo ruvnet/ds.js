@@ -4,6 +4,12 @@ DSPy.ts is a TypeScript port of Stanford's DSPy framework, bringing its powerful
 
 **created by rUv, cause he could.**
 
+## Quick Install
+
+```bash
+npm install dspy.ts
+```
+
 ## What is DSPy.ts?
 
 DSPy.ts stands for **Declarative Self-improving TypeScript**. It transforms how you build AI applications by:
