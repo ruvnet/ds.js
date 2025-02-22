@@ -12,12 +12,23 @@ npm install dspy.ts
 
 ## What is DSPy.ts?
 
-DSPy.ts stands for **Declarative Self-improving TypeScript**. It transforms how you build AI applications by:
+DSPy.ts stands for **Declarative Self-improving TypeScript**. It makes building AI apps easier by:
 
-1. **Moving Beyond Prompts**: Instead of crafting brittle prompts, you write clean, composable TypeScript code
-2. **Self-Improvement**: Your systems automatically learn and optimize based on your metrics
-3. **Type Safety**: Catch errors early with TypeScript's static typing
-4. **Local & Cloud Flexibility**: Run complete neural networks locally in the browser with ONNX/PyTorch or use cloud providers
+1. **Simple Code Instead of Prompts**: Write clear TypeScript code instead of complex prompts
+2. **Gets Better Over Time**: Your AI learns and improves automatically as you use it
+3. **Catches Mistakes Early**: TypeScript helps prevent errors before running your code
+4. **Works Everywhere**: Run AI models right in your browser:
+   - **Fast Local Processing**: Run models directly on your device, no server needed
+   - **Uses Your Graphics Card**: Speed up AI tasks using your computer's GPU
+   - **Backup Cloud Option**: Switch to cloud services when you need more power
+
+Key Benefits:
+- Run AI models without a server
+- Fast performance using your device's hardware
+- Save memory with optimized models
+- Works in any modern browser
+- Easy to test and debug
+- Simple to deploy and scale
 
 ## Integrations & Ecosystem
 
