@@ -1,6 +1,6 @@
 # OpenRouter Production Deployment Guide
 
-This guide covers best practices and configurations for deploying OpenRouter with DS.js in production environments.
+This guide covers best practices and configurations for deploying OpenRouter with DSPy.ts in production environments.
 
 ## Deployment Checklist
 
@@ -181,7 +181,7 @@ spec:
 
 ```typescript
 // serverless.ts
-import { OpenRouterModel } from 'ds.js';
+import { OpenRouterModel } from 'dspy.ts';
 
 export const handler = async (event: any) => {
   const model = new OpenRouterModel({

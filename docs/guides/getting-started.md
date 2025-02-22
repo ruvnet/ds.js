@@ -1,20 +1,20 @@
-# Getting Started with DS.js
+# Getting Started with DSPy.ts
 
 ## Introduction
 
-DS.js is a JavaScript/TypeScript port of DSPy, bringing declarative language model programming to the JavaScript ecosystem. This guide will help you get started with using DS.js in your projects.
+DSPy.ts is a TypeScript port of DSPy, bringing declarative language model programming to the TypeScript ecosystem. This guide will help you get started with using DSPy.ts in your projects.
 
 ## Installation
 
-Install DS.js and its dependencies:
+Install DSPy.ts and its dependencies:
 
 ```bash
-npm install ds.js onnxruntime-web js-pytorch
+npm install dspy.ts onnxruntime-web js-pytorch
 ```
 
 ## Basic Concepts
 
-DS.js is built around three core concepts:
+DSPy.ts is built around three core concepts:
 
 1. **Modules**: Reusable components that define input/output behavior
 2. **Language Models**: Backends that perform the actual text generation
@@ -25,7 +25,7 @@ DS.js is built around three core concepts:
 ### 1. Configure a Language Model
 
 ```typescript
-import { configureLM, ONNXModel } from 'ds.js';
+import { configureLM, ONNXModel } from 'dspy.ts';
 
 // For development, you can start with a local ONNX model
 const model = new ONNXModel({
@@ -39,7 +39,7 @@ configureLM(model);
 ### 2. Define a Module
 
 ```typescript
-import { defineModule } from 'ds.js';
+import { defineModule } from 'dspy.ts';
 
 const sentimentModule = defineModule<
   { text: string },
@@ -79,7 +79,7 @@ console.log(result);
 Combine multiple modules to create more complex workflows:
 
 ```typescript
-import { Pipeline } from 'ds.js';
+import { Pipeline } from 'dspy.ts';
 
 // Define modules
 const contextModule = defineModule<{ question: string }, { context: string }>({
@@ -182,7 +182,7 @@ const extractor = defineModule<
 
 ## Error Handling
 
-DS.js provides comprehensive error handling:
+DSPy.ts provides comprehensive error handling:
 
 ```typescript
 try {

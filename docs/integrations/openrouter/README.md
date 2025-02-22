@@ -1,6 +1,6 @@
-# OpenRouter Integration with DS.js
+# OpenRouter Integration with DSPy.ts
 
-This directory contains comprehensive guides for integrating OpenRouter with DS.js, enabling dynamic routing of language model requests across multiple providers.
+This directory contains comprehensive guides for integrating OpenRouter with DSPy.ts, enabling dynamic routing of language model requests across multiple providers.
 
 ## Table of Contents
 
@@ -62,7 +62,7 @@ This directory contains comprehensive guides for integrating OpenRouter with DS.
 
 1. Install dependencies:
 ```bash
-npm install ds.js openrouter-sdk
+npm install dspy.ts openrouter-sdk
 ```
 
 2. Configure environment:
@@ -74,8 +74,8 @@ OPENROUTER_ORG_ID=your_org_id
 
 3. Basic setup:
 ```typescript
-import { configureLM } from 'ds.js';
-import { OpenRouterModel } from 'ds.js/lm/openrouter';
+import { configureLM } from 'dspy.ts';
+import { OpenRouterModel } from 'dspy.ts/lm/openrouter';
 
 const model = new OpenRouterModel({
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -262,5 +262,5 @@ const batchProcessor = new BatchProcessor({
 ## Related Resources
 
 - [OpenRouter Documentation](https://openrouter.ai/docs)
-- [DS.js API Reference](../../api/README.md)
+- [DSPy.ts API Reference](../../api/README.md)
 - [Examples](../../examples/README.md)

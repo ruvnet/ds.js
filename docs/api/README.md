@@ -1,13 +1,13 @@
-# DS.js API Reference
+# DSPy.ts API Reference
 
 ## Core Components
 
 ### Module System
 
-The DS.js module system provides a declarative way to define language model interactions:
+The DSPy.ts module system provides a declarative way to define language model interactions:
 
 ```typescript
-import { defineModule } from 'ds.js';
+import { defineModule } from 'dspy.ts';
 
 const module = defineModule<TInput, TOutput>({
   name: string;
@@ -22,18 +22,18 @@ const module = defineModule<TInput, TOutput>({
 
 ### Language Model Integration
 
-DS.js supports multiple language model backends:
+DSPy.ts supports multiple language model backends:
 
 ```typescript
 // ONNX Runtime Web
-import { ONNXModel } from 'ds.js';
+import { ONNXModel } from 'dspy.ts';
 const onnxModel = new ONNXModel({
   modelPath: string;
   executionProvider?: 'wasm' | 'webgl' | 'webgpu';
 });
 
 // JS-PyTorch
-import { TorchModel } from 'ds.js';
+import { TorchModel } from 'dspy.ts';
 const torchModel = new TorchModel({
   modelPath?: string;
   deviceType?: 'cpu' | 'webgl';
@@ -45,7 +45,7 @@ const torchModel = new TorchModel({
 Chain multiple modules together:
 
 ```typescript
-import { Pipeline } from 'ds.js';
+import { Pipeline } from 'dspy.ts';
 
 const pipeline = new Pipeline(
   modules: Module<any, any>[],
@@ -180,7 +180,7 @@ const reactModule = defineModule<TInput, TOutput>({
 
 ## Error Handling
 
-DS.js provides several error types:
+DSPy.ts provides several error types:
 
 ```typescript
 class LMError extends Error {

@@ -1,6 +1,6 @@
 # OpenRouter Advanced Configuration
 
-This guide covers advanced configuration options and strategies for using OpenRouter with DS.js.
+This guide covers advanced configuration options and strategies for using OpenRouter with DSPy.ts.
 
 ## Routing Strategies
 

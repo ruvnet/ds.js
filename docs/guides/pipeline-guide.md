@@ -1,15 +1,15 @@
-# DS.js Pipeline Guide
+# DSPy.ts Pipeline Guide
 
 ## Overview
 
-Pipelines in DS.js allow you to chain multiple modules together to create complex workflows. This guide covers pipeline creation, configuration, and best practices.
+Pipelines in DSPy.ts allow you to chain multiple modules together to create complex workflows. This guide covers pipeline creation, configuration, and best practices.
 
 ## Basic Pipeline Usage
 
 ### Creating a Pipeline
 
 ```typescript
-import { Pipeline } from 'ds.js';
+import { Pipeline } from 'dspy.ts';
 
 const pipeline = new Pipeline(
   [module1, module2, module3],  // Array of modules

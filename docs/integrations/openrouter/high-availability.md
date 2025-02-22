@@ -1,6 +1,6 @@
 # OpenRouter High Availability Guide
 
-This guide covers strategies and configurations for achieving high availability when using OpenRouter with DS.js.
+This guide covers strategies and configurations for achieving high availability when using OpenRouter with DSPy.ts.
 
 ## High Availability Configuration
 

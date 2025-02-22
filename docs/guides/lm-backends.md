@@ -1,8 +1,8 @@
-# DS.js Language Model Backends
+# DSPy.ts Language Model Backends
 
 ## Overview
 
-DS.js supports multiple language model backends through its LMDriver interface. This guide covers the available backends and how to use them effectively.
+DSPy.ts supports multiple language model backends through its LMDriver interface. This guide covers the available backends and how to use them effectively.
 
 ## Available Backends
 
@@ -11,7 +11,7 @@ DS.js supports multiple language model backends through its LMDriver interface. 
 Run ONNX-format models directly in the browser or Node.js:
 
 ```typescript
-import { ONNXModel } from 'ds.js';
+import { ONNXModel } from 'dspy.ts';
 
 const model = new ONNXModel({
   modelPath: 'path/to/model.onnx',
@@ -40,7 +40,7 @@ configureLM(model);
 Use JS-PyTorch for neural network operations:
 
 ```typescript
-import { TorchModel } from 'ds.js';
+import { TorchModel } from 'dspy.ts';
 
 const model = new TorchModel({
   modelPath: 'path/to/model.pt',
@@ -73,7 +73,7 @@ configureLM(model);
 A mock LM implementation for testing:
 
 ```typescript
-import { DummyLM } from 'ds.js';
+import { DummyLM } from 'dspy.ts';
 
 const dummyLM = new DummyLM(new Map([
   ['test input', 'test output']

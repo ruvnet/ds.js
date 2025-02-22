@@ -1,10 +1,10 @@
-# DS.js - Declarative Self-Learning JavaScript
+# DSPy.ts - Declarative Self-Learning TypeScript
 
-DS.js is a JavaScript/TypeScript port of [DSPy](https://dspy.ai/), bringing declarative language model programming to the JavaScript ecosystem. It provides a modular framework for building composable and self-improving language model pipelines.
+DSPy.ts is a TypeScript port of [DSPy](https://dspy.ai/), bringing declarative language model programming to the TypeScript ecosystem. It provides a modular framework for building composable and self-improving language model pipelines.
 
 ## Overview
 
-DS.js enables you to build reliable AI systems by focusing on what you want your language models to do rather than how to prompt them. Instead of writing prompts as long strings, you define modules that declare their input/output behavior and let DS.js handle the rest.
+DSPy.ts enables you to build reliable AI systems by focusing on what you want your language models to do rather than how to prompt them. Instead of writing prompts as long strings, you define modules that declare their input/output behavior and let DSPy.ts handle the rest.
 
 ### Key Features
 
@@ -18,13 +18,13 @@ DS.js enables you to build reliable AI systems by focusing on what you want your
 ## Quick Start
 
 ```bash
-npm install ds.js
+npm install dspy.ts
 ```
 
 ```typescript
-import { defineModule, configureLM, ONNXModel } from 'ds.js';
+import { defineModule, configureLM, ONNXModel } from 'dspy.ts';
 
-// Configure DS.js to use an ONNX model
+// Configure DSPy.ts to use an ONNX model
 const model = new ONNXModel({
   modelPath: 'path/to/model.onnx',
   executionProvider: 'wasm'
@@ -44,7 +44,7 @@ const sentimentModule = defineModule<{ text: string }, { sentiment: string }>({
 
 // Use the module
 const result = await sentimentModule.run({
-  text: 'I love using DS.js!'
+  text: 'I love using DSPy.ts!'
 });
 console.log(result.sentiment); // Expected: "positive"
 ```
@@ -61,7 +61,7 @@ console.log(result.sentiment); // Expected: "positive"
 
 ## Practical Applications
 
-DS.js can be used for a wide range of language model applications:
+DSPy.ts can be used for a wide range of language model applications:
 
 - **Question Answering**: Build QA systems with context retrieval and answer generation
 - **Text Classification**: Create classifiers for sentiment, topics, or custom categories
@@ -128,4 +128,4 @@ MIT
 
 ## Acknowledgments
 
-DS.js is inspired by the [DSPy](https://dspy.ai/) framework and builds upon its concepts for the JavaScript ecosystem.
+DSPy.ts is inspired by the [DSPy](https://dspy.ai/) framework and builds upon its concepts for the TypeScript ecosystem.

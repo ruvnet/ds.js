@@ -1,6 +1,6 @@
-# DS.js Integrations
+# DSPy.ts Integrations
 
-This directory contains comprehensive guides for integrating DS.js with various frameworks, libraries, and services.
+This directory contains comprehensive guides for integrating DSPy.ts with various frameworks, libraries, and services.
 
 ## Available Integrations
 
@@ -11,19 +11,19 @@ This directory contains comprehensive guides for integrating DS.js with various 
 - Monitor usage and metrics
 
 ### 2. [React Integration](react/README.md)
-- Use DS.js in React applications
+- Use DSPy.ts in React applications
 - Create reusable hooks and components
 - Handle state management
 - Optimize performance
 
 ### 3. [Express Integration](express/README.md)
-- Build DS.js-powered APIs
+- Build DSPy.ts-powered APIs
 - Handle authentication and rate limiting
 - Manage server-side LM instances
 - Stream responses
 
 ### 4. [Next.js Integration](nextjs/README.md)
-- Server-side rendering with DS.js
+- Server-side rendering with DSPy.ts
 - API routes and edge functions
 - Static site generation
 - Incremental static regeneration
@@ -64,7 +64,7 @@ This directory contains comprehensive guides for integrating DS.js with various 
 
 2. **Code Organization**
    - Follow framework conventions
-   - Structure DS.js modules
+   - Structure DSPy.ts modules
    - Manage dependencies
    - Document interfaces
 

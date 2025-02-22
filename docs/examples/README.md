@@ -1,6 +1,6 @@
-# DS.js Examples
+# DSPy.ts Examples
 
-This directory contains practical examples demonstrating how to use DS.js for various natural language processing tasks.
+This directory contains practical examples demonstrating how to use DSPy.ts for various natural language processing tasks.
 
 ## Available Examples
 
@@ -26,7 +26,7 @@ Implement a classification system that can:
 
 ## Common Patterns
 
-All examples demonstrate key DS.js concepts:
+All examples demonstrate key DSPy.ts concepts:
 
 1. **Module Definition**
    - Clear input/output signatures
@@ -56,12 +56,12 @@ All examples demonstrate key DS.js concepts:
 
 1. Install dependencies:
    ```bash
-   npm install ds.js onnxruntime-web js-pytorch
+   npm install dspy.ts onnxruntime-web js-pytorch
    ```
 
 2. Configure a language model:
    ```typescript
-   import { configureLM, ONNXModel } from 'ds.js';
+   import { configureLM, ONNXModel } from 'dspy.ts';
    
    const model = new ONNXModel({
      modelPath: 'path/to/model.onnx',

@@ -1,6 +1,6 @@
 # OpenRouter Cost Management
 
-This guide covers strategies and configurations for managing costs when using OpenRouter with DS.js.
+This guide covers strategies and configurations for managing costs when using OpenRouter with DSPy.ts.
 
 ## Cost Control Strategies
 

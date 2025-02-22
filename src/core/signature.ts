@@ -1,5 +1,5 @@
 /**
- * Defines the structure for input and output fields of a DS.js module.
+ * Defines the structure for input and output fields of a DSPy.ts module.
  */
 export interface FieldDefinition {
   name: string;

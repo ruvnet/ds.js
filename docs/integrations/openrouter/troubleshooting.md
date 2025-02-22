@@ -1,6 +1,6 @@
 # OpenRouter Troubleshooting Guide
 
-This guide covers common issues and solutions when using OpenRouter with DS.js.
+This guide covers common issues and solutions when using OpenRouter with DSPy.ts.
 
 ## Common Issues
 

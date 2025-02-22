@@ -1,7 +1,7 @@
 import { Signature, FieldDefinition } from './signature';
 
 /**
- * Base class for DS.js modules.
+ * Base class for DSPy.ts modules.
  * Each module must define a signature and implement the run method.
  */
 export abstract class Module<TInput extends Record<string, any>, TOutput extends Record<string, any>> {

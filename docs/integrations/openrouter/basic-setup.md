@@ -1,12 +1,12 @@
 # OpenRouter Basic Setup
 
-This guide covers the basic setup and configuration of OpenRouter with DS.js.
+This guide covers the basic setup and configuration of OpenRouter with DSPy.ts.
 
 ## Prerequisites
 
 - Node.js (v14 or higher)
 - npm or yarn
-- DS.js project initialized
+- DSPy.ts project initialized
 - OpenRouter account and API key
 
 ## Installation
@@ -14,7 +14,7 @@ This guide covers the basic setup and configuration of OpenRouter with DS.js.
 ### 1. Install Required Packages
 
 ```bash
-npm install ds.js openrouter-sdk
+npm install dspy.ts openrouter-sdk
 ```
 
 ### 2. Set Up Environment Variables
@@ -39,7 +39,7 @@ dotenv.config();
 ### 1. Create OpenRouter Model
 
 ```typescript
-import { OpenRouterModel } from 'ds.js/lm/openrouter';
+import { OpenRouterModel } from 'dspy.ts/lm/openrouter';
 
 const model = new OpenRouterModel({
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -51,7 +51,7 @@ const model = new OpenRouterModel({
 ### 2. Initialize and Configure
 
 ```typescript
-import { configureLM } from 'ds.js';
+import { configureLM } from 'dspy.ts';
 
 await model.init();
 configureLM(model);
@@ -185,7 +185,7 @@ try {
 ### 1. Using DummyLM
 
 ```typescript
-import { DummyLM } from 'ds.js';
+import { DummyLM } from 'dspy.ts';
 
 // Create dummy LM for testing
 const dummyLM = new DummyLM(new Map([

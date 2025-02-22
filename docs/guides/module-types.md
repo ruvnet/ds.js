@@ -1,8 +1,8 @@
-# DS.js Module Types Guide
+# DSPy.ts Module Types Guide
 
 ## Overview
 
-DS.js provides several module types to handle different language model interaction patterns. Each type is optimized for specific use cases and offers unique capabilities.
+DSPy.ts provides several module types to handle different language model interaction patterns. Each type is optimized for specific use cases and offers unique capabilities.
 
 ## Core Module Types
 

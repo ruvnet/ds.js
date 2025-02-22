@@ -1,6 +1,6 @@
 # Sentiment Analysis Example
 
-This example demonstrates how to use DS.js to build a sentiment analysis module that can classify text as positive, negative, or neutral, along with a confidence score.
+This example demonstrates how to use DSPy.ts to build a sentiment analysis module that can classify text as positive, negative, or neutral, along with a confidence score.
 
 ## Overview
 
@@ -14,7 +14,7 @@ The sentiment analyzer uses a language model to:
 ### Basic Module
 
 ```typescript
-import { defineModule, configureLM, ONNXModel } from 'ds.js';
+import { defineModule, configureLM, ONNXModel } from 'dspy.ts';
 
 // Configure ONNX model
 const model = new ONNXModel({
@@ -63,7 +63,7 @@ For more robust sentiment analysis, we can create a pipeline that:
 3. Validates the results
 
 ```typescript
-import { Pipeline } from 'ds.js';
+import { Pipeline } from 'dspy.ts';
 
 // Text preprocessing module
 const preprocessModule = defineModule<
@@ -168,7 +168,7 @@ try {
 ## Testing
 
 ```typescript
-import { DummyLM } from 'ds.js';
+import { DummyLM } from 'dspy.ts';
 
 // Create dummy LM for testing
 const dummyLM = new DummyLM(new Map([

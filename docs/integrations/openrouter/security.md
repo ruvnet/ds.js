@@ -1,6 +1,6 @@
 # OpenRouter Security Best Practices
 
-This guide covers security best practices and configurations for using OpenRouter with DS.js.
+This guide covers security best practices and configurations for using OpenRouter with DSPy.ts.
 
 ## API Key Management
 

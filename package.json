@@ -1,7 +1,7 @@
 {
-  "name": "ds.js",
+  "name": "dspy.ts",
   "version": "0.1.0",
-  "description": "DS.js - Declarative Self-Learning JavaScript: A framework for compositional LM pipelines with self-improving prompt strategies.",
+  "description": "DSPy.ts - Declarative Self-Learning TypeScript: A framework for compositional LM pipelines with self-improving prompt strategies.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -13,10 +13,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/ds.js.git"
+    "url": "https://github.com/yourusername/dspy.ts.git"
   },
   "keywords": [
-    "ds.js",
+    "dspy.ts",
     "declarative",
     "language-model",
     "ONNX",

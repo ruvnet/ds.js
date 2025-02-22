@@ -33,7 +33,7 @@ export interface PipelineResult {
 }
 
 /**
- * Executes a series of DS.js modules as a pipeline
+ * Executes a series of DSPy.ts modules as a pipeline
  */
 export class Pipeline {
   private modules: Module<any, any>[];

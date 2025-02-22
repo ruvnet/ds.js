@@ -1,6 +1,6 @@
 # Question Answering Example
 
-This example demonstrates how to build a question answering system using DS.js. The system retrieves relevant context and generates accurate answers based on the provided information.
+This example demonstrates how to build a question answering system using DSPy.ts. The system retrieves relevant context and generates accurate answers based on the provided information.
 
 ## Overview
 
@@ -14,7 +14,7 @@ The QA system consists of three main components:
 ### Basic Implementation
 
 ```typescript
-import { defineModule, configureLM, ONNXModel } from 'ds.js';
+import { defineModule, configureLM, ONNXModel } from 'dspy.ts';
 
 // Configure model
 const model = new ONNXModel({
@@ -79,7 +79,7 @@ For more robust question answering, we can add:
 4. Confidence scoring
 
 ```typescript
-import { Pipeline } from 'ds.js';
+import { Pipeline } from 'dspy.ts';
 
 // Question validation module
 const questionValidatorModule = defineModule<
@@ -227,7 +227,7 @@ try {
 ## Testing
 
 ```typescript
-import { DummyLM } from 'ds.js';
+import { DummyLM } from 'dspy.ts';
 
 // Create dummy LM for testing
 const dummyLM = new DummyLM(new Map([

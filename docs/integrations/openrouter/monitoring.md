@@ -1,6 +1,6 @@
 # OpenRouter Monitoring Guide
 
-This guide covers monitoring and metrics configuration for OpenRouter with DS.js.
+This guide covers monitoring and metrics configuration for OpenRouter with DSPy.ts.
 
 ## Monitoring Configuration
 
