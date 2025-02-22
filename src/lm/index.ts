@@ -1,2 +1,3 @@
-// Language Model functionality will be implemented in Phase 3-5
-export {};
+// Re-export everything from base and dummy
+export * from './base';
+export * from './dummy';
