@@ -1,8 +1,14 @@
 # DSPy.ts 🚀
 
-DSPy.ts is a TypeScript port of Stanford's DSPy framework, bringing its powerful capabilities to the JavaScript ecosystem. As a complete port of DSPy, it maintains the core philosophy of programming—not prompting—language models while adding TypeScript's type safety and enterprise-ready features. 
+DSPy.ts helps you build powerful AI applications right in your web browser. It's based on Stanford's DSPy framework but made specifically for JavaScript and TypeScript developers. Unlike traditional AI frameworks that require expensive servers and complex infrastructure, DSPy.ts lets you create and run sophisticated AI models directly in your users' browsers. This means you can build everything from smart chatbots to image recognition systems that work entirely on your users' devices, making your AI applications faster, cheaper, and more private.
 
-What sets DSPy.ts apart is its ability to run complete neural network models directly in the client browser, enabling sophisticated AI capabilities without server-side dependencies.
+Here's what makes it special:
+
+- **Run AI Models in Your Browser**: Build and run complete AI models (both applied and generative) directly in your users' browsers - no server needed!
+- **Use Your Device's Power**: Takes advantage of your computer's GPU or CPU to run AI tasks faster
+- **Save Money**: Cut costs by running AI on users' devices instead of expensive cloud servers
+- **Works Everywhere**: Run the same models on computers, phones, or IoT devices
+- **Easy to Use**: Write clean TypeScript code instead of complex AI prompts
 
 **created by rUv, cause he could.**
 
@@ -19,7 +25,7 @@ DSPy.ts stands for **Declarative Self-improving TypeScript**. It makes building 
 1. **Simple Code Instead of Prompts**: Write clear TypeScript code instead of complex prompts
 2. **Gets Better Over Time**: Your AI learns and improves automatically as you use it
 3. **Catches Mistakes Early**: TypeScript helps prevent errors before running your code
-4. **Works Everywhere**: Run AI models right in your browser:
+4. **Works Everywhere**: buid & Run AI models right in your browser:
    - **Fast Local Processing**: Run models directly on your device, no server needed
    - **Uses Your Graphics Card**: Speed up AI tasks using your computer's GPU
    - **Backup Cloud Option**: Switch to cloud services when you need more power
@@ -308,17 +314,20 @@ const dataAnalyst = new Pipeline([
 ### 1. ONNX Integration
 - Run models locally
 - Hardware acceleration
+- Build & run both applied and generative models
 - Reduced latency
 
 ### 2. js-pytorch Support
 - Direct PyTorch model usage
-- GPU acceleration
+- Leverage client GPU/CPU resources
 - Efficient inference
+- Edge computing across devices (computers, mobile, IoT)
 
 ### 3. Enterprise Features
 - Monitoring & logging
 - Error recovery
 - Load balancing
+- Reduced infrastructure costs through edge computing
 
 ## 📚 Documentation
 
