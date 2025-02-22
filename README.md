@@ -1,6 +1,8 @@
 # DSPy.ts 🚀
 
-DSPy.ts is a TypeScript port of Stanford's DSPy framework, bringing its powerful capabilities to the JavaScript ecosystem. As a complete port of DSPy, it maintains the core philosophy of programming—not prompting—language models while adding TypeScript's type safety and enterprise-ready features. What sets DSPy.ts apart is its ability to run complete neural network models directly in the client browser, enabling sophisticated AI capabilities without server-side dependencies.
+DSPy.ts is a TypeScript port of Stanford's DSPy framework, bringing its powerful capabilities to the JavaScript ecosystem. As a complete port of DSPy, it maintains the core philosophy of programming—not prompting—language models while adding TypeScript's type safety and enterprise-ready features. 
+
+What sets DSPy.ts apart is its ability to run complete neural network models directly in the client browser, enabling sophisticated AI capabilities without server-side dependencies.
 
 **created by rUv, cause he could.**
 
