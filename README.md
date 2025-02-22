@@ -11,7 +11,7 @@ Phased implementation of **DS.js (Declarative Self‑learning JavaScript)**. Thi
    • Initialize an npm project with TypeScript.  
    • Set up build tools (tsconfig, ESLint/Prettier if desired) and install dependencies:  
   – [onnxruntime-web](https://github.com/microsoft/onnxruntime-web)  
-  – [js‑pytorch](https://github.com/xxx/js-pytorch) (assumed available via npm or CDN)  
+  – [js‑pytorch](https://eduardoleao052.github.io/js-pytorch/site/) (available via npm or CDN)  
   – [Jest](https://jestjs.io) for testing  
 
 2. **Phase 2 – DSL & Core Module System**  
