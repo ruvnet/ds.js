@@ -31,6 +31,13 @@ Create an agent that can:
 - Chain multiple tools together
 - Handle multi-step reasoning
 
+### 5. [Optimizer](optimize/README.md)
+Improve module performance with:
+- Automatic few-shot example generation
+- Metric-based example selection
+- Save/load optimized modules
+- Pipeline optimization support
+
 ## Common Patterns
 
 All examples demonstrate key DSPy.ts concepts:

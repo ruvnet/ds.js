@@ -1,0 +1,32 @@
+{
+  "config": {
+    "maxIterations": 10,
+    "numThreads": 1,
+    "debug": true,
+    "maxLabeledDemos": 2,
+    "maxBootstrappedDemos": 2,
+    "minScore": 0.8
+  },
+  "program": {
+    "name": "SentimentAnalyzer",
+    "signature": {
+      "inputs": [
+        {
+          "name": "text",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "sentiment",
+          "type": "string"
+        },
+        {
+          "name": "confidence",
+          "type": "number"
+        }
+      ]
+    },
+    "promptTemplate": "(input) => {\n            const demoText = demos.map(demo => `Example:\nInput: ${JSON.stringify(demo.input)}\nExpected Output: ${JSON.stringify(demo.output)}`).join('\\n\\n');\n            return `${demoText}\\n\\nAnalyze the following input and respond in JSON format:\\nInput: ${JSON.stringify(input)}\\n\\nResponse:`;\n        }"
+  }
+}
