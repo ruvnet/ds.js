@@ -1,26 +1,26 @@
-import { Module, signature, input, output } from '../index';
+import { Module } from "../module.ts";
+import { FieldType, signature } from "../signature.ts";
 
-/**
- * Module for making predictions using a language model
- */
 export class PredictModule extends Module {
   constructor() {
     super(signature(
-      [
-        input('prompt', 'string', 'Input prompt for prediction'),
-        input('temperature', 'number', 'Sampling temperature', false)
-      ],
-      [
-        output('prediction', 'string', 'Generated prediction')
-      ]
+      "PredictModule",
+      "Makes predictions using a language model",
+      {
+        prompt: { type: FieldType.String, description: "Input prompt" },
+        temperature: { type: FieldType.Number, description: "Sampling temperature", required: false }
+      },
+      {
+        prediction: { type: FieldType.String, description: "Generated prediction" }
+      }
     ));
   }
 
-  protected async forward(input: Record<string, unknown>): Promise<Record<string, unknown>> {
-    const prompt = input.prompt as string;
-    const temperature = (input.temperature as number) || 0.0;
+  async forward(inputs: Record<string, any>): Promise<Record<string, any>> {
+    const { prompt, temperature = 0.7 } = inputs;
 
-    const prediction = await this.getLM().generate(prompt);
+    // Generate prediction
+    const prediction = await this.generateText(prompt);
 
     return {
       prediction

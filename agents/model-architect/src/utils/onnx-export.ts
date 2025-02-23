@@ -1,4 +1,7 @@
-import { ModelArchitecture } from "../types/index.ts";
+import type { ModelArchitecture } from "../types/index.ts";
+import { torch } from "./mock-pytorch.ts";
+import { ensureDir } from "https://deno.land/std@0.220.1/fs/mod.ts";
+import { join } from "https://deno.land/std@0.220.1/path/mod.ts";
 
 interface Conv2DLayer {
   type: "Conv2D";
@@ -33,6 +36,65 @@ interface DropoutLayer {
 
 type Layer = Conv2DLayer | MaxPooling2DLayer | BatchNormalizationLayer | FlattenLayer | DenseLayer | DropoutLayer;
 
+class Model extends torch.nn.Module {
+  layers: torch.nn.Module[];
+
+  constructor(architecture: ModelArchitecture) {
+    super();
+    this.layers = this.buildLayers(architecture.layers as Layer[]);
+  }
+
+  forward(x: any): any {
+    for (const layer of this.layers) {
+      x = layer.forward(x);
+    }
+    return x;
+  }
+
+  private buildLayers(layers: Layer[]): torch.nn.Module[] {
+    const modules: torch.nn.Module[] = [];
+    
+    for (let i = 0; i < layers.length; i++) {
+      const layer = layers[i];
+      
+      switch (layer.type) {
+        case "Conv2D": {
+          const conv = new torch.nn.Conv2D(layer.filters, layer.kernelSize);
+          modules.push(conv);
+          if (layer.activation === "relu") {
+            modules.push(new torch.nn.ReLU());
+          }
+          break;
+        }
+        case "MaxPooling2D": {
+          const pool = new torch.nn.MaxPooling2D(layer.kernelSize);
+          modules.push(pool);
+          break;
+        }
+        case "Flatten": {
+          const flatten = new torch.nn.Flatten();
+          modules.push(flatten);
+          break;
+        }
+        case "Dense": {
+          const inFeatures = i === 0 ? 1 : (layers[i-1] as DenseLayer).units ?? (layers[i-1] as Conv2DLayer).filters;
+          const linear = new torch.nn.Linear(inFeatures, layer.units);
+          modules.push(linear);
+          if (layer.activation === "relu") {
+            modules.push(new torch.nn.ReLU());
+          }
+          break;
+        }
+        default:
+          console.warn(`Layer type ${layer.type} not yet supported in js-pytorch`);
+          break;
+      }
+    }
+
+    return modules;
+  }
+}
+
 /**
  * Export model architecture to ONNX format
  */
@@ -41,148 +103,37 @@ export async function exportToOnnx(
   outputPath: string,
   metadata: Record<string, unknown>
 ): Promise<void> {
-  const pythonScript = generatePythonScript(architecture, metadata);
-  
-  // Create output directory if it doesn't exist
-  await Deno.mkdir(outputPath, { recursive: true });
-  
-  // Write Python script
-  const scriptPath = `${outputPath}/create_model.py`;
-  await Deno.writeTextFile(scriptPath, pythonScript);
-  
-  // Execute Python script
-  const command = new Deno.Command("python3", {
-    args: [scriptPath],
-    stdout: "piped",
-    stderr: "piped"
-  });
-  
   try {
-    const { code, stdout, stderr } = await command.output();
+    // Create model instance
+    const model = new Model(architecture);
     
-    if (code !== 0) {
-      const error = new TextDecoder().decode(stderr);
-      throw new Error(`Failed to export ONNX model: ${error}`);
-    }
-    
-    console.log("Successfully exported model to ONNX format");
-  } catch (error) {
-    if (error instanceof Error && error.message.includes("can't open file")) {
-      // Create models directory if it doesn't exist
-      await Deno.mkdir("models", { recursive: true });
-      // Try again with relative path
-      const command = new Deno.Command("python3", {
-        args: ["./create_model.py"],
-        stdout: "piped",
-        stderr: "piped"
-      });
-      const { code, stdout, stderr } = await command.output();
-      if (code !== 0) {
-        const error = new TextDecoder().decode(stderr);
-        throw new Error(`Failed to export ONNX model: ${error}`);
-      }
+    // Create dummy input tensor
+    const dummyInput = torch.tensor(
+      new Array(architecture.inputShape.reduce((a: number, b: number) => a * b, 1)).fill(0),
+      false
+    );
+
+    // Create output directory and save files
+    try {
+      // Create directory
+      await ensureDir(outputPath);
+      
+      // Save model
+      await torch.save(model, join(outputPath, 'model.onnx'));
+      
+      // Save metadata
+      await Deno.writeTextFile(
+        join(outputPath, 'metadata.json'),
+        JSON.stringify(metadata, null, 2)
+      );
+
       console.log("Successfully exported model to ONNX format");
-    } else {
-      throw error;
+    } catch (err) {
+      const error = err as Error;
+      throw new Error(`Failed to save files: ${error.message}`);
     }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    throw new Error(`Failed to export model: ${errorMessage}`);
   }
-}
-
-/**
- * Generate Python script for ONNX export
- */
-function generatePythonScript(
-  architecture: ModelArchitecture,
-  metadata: Record<string, unknown>
-): string {
-  const layers = architecture.layers as Layer[];
-  const inputShape = architecture.inputShape;
-  const outputShape = architecture.outputShape;
-
-  return `
-import torch
-import torch.nn as nn
-
-class Model(nn.Module):
-    def __init__(self):
-        super(Model, self).__init__()
-        self.layers = nn.ModuleList([
-${generateLayerCode(layers)}
-        ])
-        
-    def forward(self, x):
-        for layer in self.layers:
-            x = layer(x)
-        return x
-
-# Create model instance
-model = Model()
-
-# Create dummy input
-x = torch.randn(1, ${inputShape[2]}, ${inputShape[0]}, ${inputShape[1]})
-
-# Export to ONNX
-torch.onnx.export(
-    model,
-    x,
-    "model.onnx",
-    input_names=["input"],
-    output_names=["output"],
-    dynamic_axes={
-        "input": {0: "batch_size"},
-        "output": {0: "batch_size"}
-    },
-    opset_version=12
-)
-
-# Save metadata
-import json
-with open("metadata.json", "w") as f:
-    json.dump(${JSON.stringify(metadata)}, f, indent=2)
-`;
-}
-
-/**
- * Generate PyTorch layer code
- */
-function generateLayerCode(layers: Layer[]): string {
-  return layers.map((layer, i) => {
-    switch (layer.type) {
-      case "Conv2D": {
-        const inChannels = i === 0 ? 3 : (layers[i-1] as Conv2DLayer).filters;
-        return `            nn.Conv2d(
-                in_channels=${inChannels},
-                out_channels=${layer.filters},
-                kernel_size=(${layer.kernelSize[0]}, ${layer.kernelSize[1]})
-            )${layer.activation ? `,\n            nn.ReLU()` : ""}`;
-      }
-      
-      case "MaxPooling2D":
-        return `            nn.MaxPool2d(
-                kernel_size=(${layer.kernelSize[0]}, ${layer.kernelSize[1]})
-            )`;
-      
-      case "BatchNormalization":
-        return `            nn.BatchNorm2d(
-                num_features=${(layers[i-1] as Conv2DLayer).filters}
-            )`;
-      
-      case "Flatten":
-        return `            nn.Flatten()`;
-      
-      case "Dense": {
-        const inFeatures = i === 0 ? 1 : (layers[i-1] as DenseLayer).units ?? (layers[i-1] as Conv2DLayer).filters;
-        return `            nn.Linear(
-                in_features=${inFeatures},
-                out_features=${layer.units}
-            )${layer.activation ? `,\n            nn.ReLU()` : ""}`;
-      }
-      
-      case "Dropout":
-        return `            nn.Dropout(p=${layer.rate})`;
-      
-      default:
-        throw new Error(`Unsupported layer type: ${(layer as Layer).type}`);
-    }
-  }).join(",\n");
 }

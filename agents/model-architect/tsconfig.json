@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2020",
+    "moduleResolution": "bundler",
+    "lib": ["ES2020", "DOM", "ESNext"],
+    "outDir": "./dist",
+    "rootDir": ".",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "typeRoots": [
+      "./src/types",
+      "./node_modules/@types"
+    ],
+    "paths": {
+      "std/*": ["https://deno.land/std@0.220.1/*"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "examples/**/*",
+    "dspy/**/*",
+    "tests/**/*"
+  ],
+  "exclude": ["node_modules"]
+}

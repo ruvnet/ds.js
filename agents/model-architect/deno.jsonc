@@ -1,27 +1,37 @@
 {
+  "tasks": {
+    "dev": "deno run --allow-read --allow-write --allow-net --allow-env --unstable src/index.ts",
+    "test": "deno test --allow-read --allow-write --allow-env --unstable"
+  },
   "compilerOptions": {
     "allowJs": true,
-    "lib": ["deno.ns", "deno.window", "dom", "esnext"],
+    "lib": ["dom", "esnext"],
     "strict": true,
-    "types": ["./src/types"]
-  },
-  "tasks": {
-    "start": "deno run --allow-net --allow-env src/autonomous.ts",
-    "interactive": "deno run --allow-net --allow-env src/interactive.ts",
-    "test": "deno test --allow-net --allow-env",
-    "fmt": "deno fmt",
-    "lint": "deno lint"
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "imports": {
-    "@types/deno": "npm:@types/deno"
+    "js-pytorch": "npm:js-pytorch",
+    "std/": "https://deno.land/std@0.220.1/"
   },
   "fmt": {
+    "files": {
+      "include": ["src/"]
+    },
     "options": {
       "useTabs": false,
-      "lineWidth": 100,
+      "lineWidth": 80,
       "indentWidth": 2,
-      "singleQuote": false,
+      "singleQuote": true,
       "proseWrap": "preserve"
+    }
+  },
+  "lint": {
+    "files": {
+      "include": ["src/"]
+    },
+    "rules": {
+      "tags": ["recommended"]
     }
   }
 }

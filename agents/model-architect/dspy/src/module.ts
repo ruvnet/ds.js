@@ -1,9 +1,6 @@
-import { LMDriver, getLM } from './lm';
-import { ModuleSignature, validateInput, validateOutput } from './signature';
+import { getLM } from "./lm.ts";
+import { ModuleSignature, validateInput, validateOutput } from "./signature.ts";
 
-/**
- * Base module class
- */
 export abstract class Module {
   private signature: ModuleSignature;
 
@@ -11,31 +8,31 @@ export abstract class Module {
     this.signature = signature;
   }
 
-  /**
-   * Get the current language model
-   */
-  protected getLM(): LMDriver {
-    return getLM();
-  }
+  abstract forward(inputs: Record<string, any>): Promise<Record<string, any>>;
 
-  /**
-   * Run the module with the given input
-   */
-  async run(input: Record<string, unknown>): Promise<Record<string, unknown>> {
-    // Validate input
-    validateInput(this.signature.input, input);
+  async run(inputs: Record<string, any>): Promise<Record<string, any>> {
+    // Validate inputs
+    if (!validateInput(this.signature.inputs, inputs)) {
+      throw new Error(`Invalid inputs for module ${this.signature.name}`);
+    }
 
     // Run forward pass
-    const output = await this.forward(input);
+    const outputs = await this.forward(inputs);
 
-    // Validate output
-    validateOutput(this.signature.output, output);
+    // Validate outputs
+    if (!validateOutput(this.signature.outputs, outputs)) {
+      throw new Error(`Invalid outputs from module ${this.signature.name}`);
+    }
 
-    return output;
+    return outputs;
   }
 
-  /**
-   * Forward pass implementation
-   */
-  protected abstract forward(input: Record<string, unknown>): Promise<Record<string, unknown>>;
+  getSignature(): ModuleSignature {
+    return this.signature;
+  }
+
+  protected async generateText(prompt: string): Promise<string> {
+    const lm = getLM();
+    return await lm.generate(prompt);
+  }
 }

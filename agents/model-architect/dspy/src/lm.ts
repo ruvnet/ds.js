@@ -1,5 +1,5 @@
-export interface LMDriver {
-  generate(prompt: string): Promise<string>;
+export abstract class LMDriver {
+  abstract generate(prompt: string): Promise<string>;
 }
 
 let currentLM: LMDriver | null = null;

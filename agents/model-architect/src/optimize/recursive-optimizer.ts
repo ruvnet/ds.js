@@ -51,25 +51,55 @@ export class RecursiveOptimizer {
 
   constructor(architecture: ModelArchitecture, constraints: OptimizationConstraints) {
     this.architecture = architecture;
-    // Ensure all required properties are present
-    if (!constraints.maxIterations || !constraints.earlyStoppingPatience) {
-      throw new Error("Missing required optimization constraints");
-    }
-    this.constraints = constraints as Required<OptimizationConstraints>;
+    // Set default constraints
+    this.constraints = {
+      maxParameters: constraints.maxParameters || 1000000,
+      maxMemory: constraints.maxMemory || 1000,
+      minAccuracy: constraints.minAccuracy || 0.95,
+      maxLatency: constraints.maxLatency || 50,
+      minThroughput: constraints.minThroughput || 100,
+      framework: constraints.framework || "pytorch",
+      quantization: constraints.quantization || {
+        precision: "fp16",
+        calibrationDataset: "validation"
+      },
+      allowedLayerTypes: constraints.allowedLayerTypes || [
+        "Conv2D",
+        "MaxPooling2D",
+        "BatchNormalization",
+        "ReLU",
+        "Dropout",
+        "Dense"
+      ],
+      skipConnections: constraints.skipConnections ?? true,
+      optimizationMethod: constraints.optimizationMethod || "bayesian",
+      maxIterations: constraints.maxIterations || 10,
+      earlyStoppingPatience: constraints.earlyStoppingPatience || 3,
+      crossValidationFolds: constraints.crossValidationFolds || 5
+    } as Required<OptimizationConstraints>;
     this.outputPath = "./models/image_classification";
-
-    // Configure LM
-    const apiKey = Deno.env.get("OPENROUTER_API_KEY");
-    if (!apiKey) {
-      throw new Error("OPENROUTER_API_KEY environment variable is required");
-    }
-    configureLM(new OpenRouterLM(apiKey));
 
     // Create optimizer
     this.optimizer = new ArchitectureOptimizer();
   }
 
+  private async configureLM(): Promise<void> {
+    if (Deno.env.get("NODE_ENV") === "test") {
+      const { MockLM } = await import("../../dspy/src/lm/mock.ts");
+      configureLM(new MockLM());
+    } else {
+      const apiKey = Deno.env.get("OPENROUTER_API_KEY");
+      if (!apiKey) {
+        throw new Error("OPENROUTER_API_KEY environment variable is required");
+      }
+      configureLM(new OpenRouterLM(apiKey));
+    }
+  }
+
   async optimize(): Promise<ModelArchitecture> {
+    // Configure LM first
+    await this.configureLM();
+
     console.log("\n=== Starting Recursive Optimization ===\n");
 
     // Initial analysis
@@ -87,8 +117,8 @@ export class RecursiveOptimizer {
 
       // Get suggestions and bottlenecks
       const result = await this.optimizer.run({
-        architecture: JSON.stringify(this.architecture),
-        constraints: JSON.stringify(this.constraints)
+        architecture: this.architecture,
+        constraints: this.constraints
       });
 
       const suggestions = result.suggestions as string[];

@@ -63,7 +63,11 @@ export function validateOutput(signature: OutputSignature, output: any): boolean
     if (!(key in output)) {
       return false;
     }
-    if (typeof output[key] !== field.type) {
+    if (field.type === FieldType.Array) {
+      if (!Array.isArray(output[key])) {
+        return false;
+      }
+    } else if (typeof output[key] !== field.type) {
       return false;
     }
   }
