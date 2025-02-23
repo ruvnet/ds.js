@@ -70,6 +70,47 @@ export const nn = {
   }
 };
 
+function serializeModel(model: any): string {
+  // Create a simple ONNX-like format
+  const layers = model.layers.map((layer: any) => {
+    if (layer instanceof nn.Linear) {
+      return {
+        type: 'Linear',
+        inFeatures: layer.inFeatures,
+        outFeatures: layer.outFeatures
+      };
+    } else if (layer instanceof nn.ReLU) {
+      return {
+        type: 'ReLU'
+      };
+    } else if (layer instanceof nn.Conv2D) {
+      return {
+        type: 'Conv2D',
+        filters: layer.filters,
+        kernelSize: layer.kernelSize
+      };
+    } else if (layer instanceof nn.MaxPooling2D) {
+      return {
+        type: 'MaxPooling2D',
+        kernelSize: layer.kernelSize
+      };
+    } else if (layer instanceof nn.Flatten) {
+      return {
+        type: 'Flatten'
+      };
+    }
+    return {
+      type: 'Unknown'
+    };
+  });
+
+  return JSON.stringify({
+    format: 'ONNX',
+    version: '1.0.0',
+    layers
+  }, null, 2);
+}
+
 export const torch = {
   nn,
   tensor: (data: number[] | Float32Array, requiresGrad = false): Tensor => ({
@@ -79,6 +120,8 @@ export const torch = {
   }),
   save: async (model: any, path: string): Promise<void> => {
     console.log(`Mock saving model to ${path}`);
+    const modelData = serializeModel(model);
+    await Deno.writeTextFile(path, modelData);
     return Promise.resolve();
   }
 };
