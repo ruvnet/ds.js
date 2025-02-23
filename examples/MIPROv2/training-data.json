@@ -1,0 +1,54 @@
+{
+  "training_data": [
+    {
+      "text": "What is machine learning?",
+      "context": "AI and computer science",
+      "output": "Machine learning is a subset of artificial intelligence that enables systems to learn and improve from experience without being explicitly programmed."
+    },
+    {
+      "text": "How does LSTM work?",
+      "context": "Neural networks and deep learning",
+      "output": "LSTM (Long Short-Term Memory) is a type of recurrent neural network architecture that uses memory cells and gates to learn long-term dependencies in sequential data."
+    },
+    {
+      "text": "Explain backpropagation",
+      "context": "Training neural networks",
+      "output": "Backpropagation is an algorithm used to train neural networks by calculating gradients of the loss function with respect to weights, propagating errors backward through the network."
+    },
+    {
+      "text": "What are transformers?",
+      "context": "Deep learning architectures",
+      "output": "Transformers are neural network architectures that use self-attention mechanisms to process sequential data, particularly effective in natural language processing tasks."
+    },
+    {
+      "text": "Describe gradient descent",
+      "context": "Optimization algorithms",
+      "output": "Gradient descent is an optimization algorithm that iteratively adjusts parameters by moving in the direction of steepest descent of the loss function to find local minima."
+    },
+    {
+      "text": "What is transfer learning?",
+      "context": "Machine learning techniques",
+      "output": "Transfer learning is a technique where a model trained on one task is repurposed for a related task, leveraging pre-learned features to improve performance and reduce training time."
+    },
+    {
+      "text": "Explain neural networks",
+      "context": "Deep learning fundamentals",
+      "output": "Neural networks are computing systems inspired by biological neural networks, consisting of interconnected nodes (neurons) that process and transmit information to solve complex patterns."
+    },
+    {
+      "text": "What is regularization?",
+      "context": "Model optimization",
+      "output": "Regularization is a technique used to prevent overfitting in machine learning models by adding a penalty term to the loss function, encouraging simpler models."
+    },
+    {
+      "text": "Describe CNN architecture",
+      "context": "Computer vision",
+      "output": "Convolutional Neural Networks (CNNs) are deep learning architectures designed for processing grid-like data, using convolutional layers to automatically learn hierarchical patterns."
+    },
+    {
+      "text": "What is reinforcement learning?",
+      "context": "AI learning methods",
+      "output": "Reinforcement learning is a type of machine learning where agents learn to make decisions by interacting with an environment, receiving rewards or penalties for their actions."
+    }
+  ]
+}

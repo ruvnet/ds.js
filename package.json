@@ -1,6 +1,6 @@
 {
   "name": "dspy.ts",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "DSPy.ts - Declarative Self-Learning TypeScript: A framework for compositional LM pipelines with self-improving prompt strategies.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
