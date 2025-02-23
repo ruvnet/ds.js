@@ -10,6 +10,8 @@ An autonomous agent for designing and optimizing neural network architectures. T
 - ONNX export for cross-platform compatibility
 - Quantization support for model optimization
 - Detailed logging and analysis
+- Support for both js-pytorch and mock implementations
+- Automated model training and export workflow
 
 ## Installation
 
@@ -21,6 +23,11 @@ curl -fsSL https://deno.land/x/install/install.sh | sh
 2. Set up environment variables:
 ```bash
 export OPENROUTER_API_KEY=your-api-key
+```
+
+3. (Optional) Install js-pytorch for actual model training:
+```bash
+npm install js-pytorch
 ```
 
 ## Usage
@@ -41,6 +48,18 @@ deno task optimize:interactive:image
 
 # Interactive mode for text classification
 deno task optimize:interactive:text
+```
+
+### Training and Export
+
+The agent supports both mock training (for testing) and actual training with js-pytorch:
+
+```bash
+# Run with mock implementation (for testing)
+USE_MOCK=true deno task train examples/train-and-export.ts
+
+# Run with actual js-pytorch
+deno task train examples/train-and-export.ts
 ```
 
 ### Optimization Constraints
@@ -71,11 +90,9 @@ The agent generates the following outputs in the `models/` directory:
 models/
   └── task-name/
       ├── model.onnx           # ONNX model file
-      ├── architecture.json    # Model architecture
-      ├── model-info.json     # Model metadata and metrics
+      ├── metadata.json       # Model metadata and metrics
       ├── README.md           # Usage instructions
-      ├── conversion.log      # ONNX conversion log
-      └── convert_to_onnx.py  # Conversion script
+      └── conversion.log      # ONNX conversion log
 ```
 
 ## Architecture
@@ -90,7 +107,8 @@ graph TD
     D --> E[Suggestions]
     E --> F[Improvements]
     F --> D
-    F --> G[ONNX Export]
+    F --> G[Training & Export]
+    G --> H[ONNX Model]
 ```
 
 ### Components
@@ -98,6 +116,7 @@ graph TD
 - **Base Agent**: Provides core functionality and interface
 - **Autonomous Agent**: Implements automated optimization
 - **Recursive Optimizer**: Performs iterative improvements
+- **Training Module**: Handles model training with js-pytorch
 - **ONNX Export**: Handles model conversion and export
 
 ## Development
@@ -112,8 +131,16 @@ src/
   ├── optimize/          # Optimization components
   ├── tools/            # Agent tools
   ├── types/            # TypeScript type definitions
-  └── utils/            # Utility functions
+  └── utils/            # Utility functions and mock implementations
 ```
+
+### Mock Implementation
+
+The agent includes a mock implementation for testing purposes:
+- Simulates PyTorch functionality
+- Supports all common layer types
+- Generates mock training metrics
+- Creates valid ONNX model structure
 
 ### Adding New Tasks
 

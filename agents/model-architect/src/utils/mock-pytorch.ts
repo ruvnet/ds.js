@@ -1,127 +1,162 @@
 // Mock implementation of js-pytorch for testing
 
-export interface Tensor {
+interface Tensor {
   data: number[] | Float32Array;
-  requiresGrad: boolean;
   shape: number[];
+  backward(): void;
+  item(): number;
 }
 
-export interface Module {
-  forward(x: any): any;
+interface Parameter extends Tensor {}
+
+class Module {
+  constructor() {}
+  forward(x: Tensor): Tensor { return x; }
+  parameters(): Parameter[] { return []; }
+  train(): void {}
 }
 
-export interface Linear extends Module {
+class Linear extends Module {
   inFeatures: number;
   outFeatures: number;
+  constructor(inFeatures: number, outFeatures: number) {
+    super();
+    this.inFeatures = inFeatures;
+    this.outFeatures = outFeatures;
+  }
 }
 
-export interface ReLU extends Module {
+class ReLU extends Module {
+  constructor() { super(); }
 }
 
-export interface Conv2D extends Module {
-  filters: number;
-  kernelSize: [number, number];
+class Conv2d extends Module {
+  constructor(inChannels: number, outChannels: number, kernelSize: [number, number]) {
+    super();
+  }
 }
 
-export interface MaxPooling2D extends Module {
-  kernelSize: [number, number];
+class MaxPool2d extends Module {
+  constructor(kernelSize: [number, number]) {
+    super();
+  }
 }
 
-export interface Flatten extends Module {
+class BatchNorm2d extends Module {
+  constructor(numFeatures: number) {
+    super();
+  }
 }
 
-export const nn = {
-  Module: class implements Module {
-    constructor() {}
-    forward(x: any): any { return x; }
-  },
-  Linear: class implements Linear {
-    inFeatures: number;
-    outFeatures: number;
-    constructor(inFeatures: number, outFeatures: number) {
-      this.inFeatures = inFeatures;
-      this.outFeatures = outFeatures;
-    }
-    forward(x: any): any { return x; }
-  },
-  ReLU: class implements ReLU {
-    constructor() {}
-    forward(x: any): any { return x; }
-  },
-  Conv2D: class implements Conv2D {
-    filters: number;
-    kernelSize: [number, number];
-    constructor(filters: number, kernelSize: [number, number]) {
-      this.filters = filters;
-      this.kernelSize = kernelSize;
-    }
-    forward(x: any): any { return x; }
-  },
-  MaxPooling2D: class implements MaxPooling2D {
-    kernelSize: [number, number];
-    constructor(kernelSize: [number, number]) {
-      this.kernelSize = kernelSize;
-    }
-    forward(x: any): any { return x; }
-  },
-  Flatten: class implements Flatten {
-    constructor() {}
-    forward(x: any): any { return x; }
+class Flatten extends Module {
+  constructor() { super(); }
+}
+
+class Dropout extends Module {
+  constructor(p: number) {
+    super();
+  }
+}
+
+class CrossEntropyLoss extends Module {
+  constructor() { super(); }
+  override forward(x: Tensor, targets?: Tensor): Tensor {
+    return {
+      data: [0],
+      shape: [1],
+      backward: () => {},
+      item: () => 0
+    };
+  }
+}
+
+class Dataset {
+  constructor() {}
+}
+
+class DataLoader {
+  constructor(dataset: Dataset, options: { batchSize: number; shuffle: boolean }) {}
+  *[Symbol.iterator](): Iterator<[Tensor, Tensor]> {
+    yield [
+      { data: [0], shape: [1], backward: () => {}, item: () => 0 },
+      { data: [0], shape: [1], backward: () => {}, item: () => 0 }
+    ];
+  }
+}
+
+class Adam {
+  constructor(parameters: Parameter[], learningRate: number) {}
+  zeroGrad(): void {}
+  step(): void {}
+}
+
+const nn = {
+  Module,
+  Linear,
+  ReLU,
+  Conv2d,
+  MaxPool2d,
+  BatchNorm2d,
+  Flatten,
+  Dropout,
+  CrossEntropyLoss,
+  // Aliases for compatibility
+  Conv2D: Conv2d,
+  MaxPooling2D: MaxPool2d
+};
+
+const utils = {
+  data: {
+    Dataset,
+    DataLoader
   }
 };
 
-function serializeModel(model: any): string {
-  // Create a simple ONNX-like format
-  const layers = model.layers.map((layer: any) => {
-    if (layer instanceof nn.Linear) {
-      return {
-        type: 'Linear',
-        inFeatures: layer.inFeatures,
-        outFeatures: layer.outFeatures
-      };
-    } else if (layer instanceof nn.ReLU) {
-      return {
-        type: 'ReLU'
-      };
-    } else if (layer instanceof nn.Conv2D) {
-      return {
-        type: 'Conv2D',
-        filters: layer.filters,
-        kernelSize: layer.kernelSize
-      };
-    } else if (layer instanceof nn.MaxPooling2D) {
-      return {
-        type: 'MaxPooling2D',
-        kernelSize: layer.kernelSize
-      };
-    } else if (layer instanceof nn.Flatten) {
-      return {
-        type: 'Flatten'
-      };
-    }
-    return {
-      type: 'Unknown'
-    };
-  });
+const optim = {
+  Adam
+};
 
-  return JSON.stringify({
-    format: 'ONNX',
-    version: '1.0.0',
-    layers
-  }, null, 2);
+const onnx = {
+  exportModel: async (
+    model: Module,
+    args: Tensor,
+    f: string,
+    options: {
+      input_names: string[];
+      output_names: string[];
+      dynamic_axes?: Record<string, Record<string, string>>;
+    }
+  ): Promise<void> => {
+    console.log(`Mock saving model to ${f}`);
+    return Promise.resolve();
+  }
+};
+
+function tensor(data: number[] | Float32Array, requiresGrad = false): Tensor {
+  return {
+    data,
+    shape: Array.isArray(data) ? [data.length] : [data.byteLength / 4],
+    backward: () => {},
+    item: () => 0
+  };
+}
+
+function randn(shape: number[]): Tensor {
+  const size = shape.reduce((a, b) => a * b, 1);
+  return tensor(new Array(size).fill(0).map(() => Math.random()));
+}
+
+async function save(model: Module, path: string): Promise<void> {
+  console.log(`Mock saving model to ${path}`);
+  return Promise.resolve();
 }
 
 export const torch = {
   nn,
-  tensor: (data: number[] | Float32Array, requiresGrad = false): Tensor => ({
-    data,
-    requiresGrad,
-    shape: Array.isArray(data) ? [data.length] : [data.byteLength / 4]
-  }),
-  save: async (model: any, path: string): Promise<void> => {
-    console.log(`Mock saving model to ${path}`);
-    const modelData = serializeModel(model);
-    await Deno.writeTextFile(path, modelData);
-    return Promise.resolve();
-  }
+  utils,
+  optim,
+  onnx,
+  tensor,
+  randn,
+  save
 };

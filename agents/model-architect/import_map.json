@@ -1,19 +1,6 @@
 {
   "imports": {
-    "js-pytorch": "./src/utils/mock-pytorch.ts",
-    "onnxruntime-web": "npm:onnxruntime-web",
     "std/": "https://deno.land/std@0.220.1/",
-    "std/fs": "https://deno.land/std@0.220.1/fs/mod.ts",
-    "std/path": "https://deno.land/std@0.220.1/path/mod.ts",
-    "@/": "./src/",
-    "@/types/": "./src/types/",
-    "@/utils/": "./src/utils/"
-  },
-  "scopes": {
-    "./src/": {
-      "@/": "./src/",
-      "std/fs": "https://deno.land/std@0.220.1/fs/mod.ts",
-      "std/path": "https://deno.land/std@0.220.1/path/mod.ts"
-    }
+    "js-pytorch": "./src/utils/mock-pytorch.ts"
   }
 }

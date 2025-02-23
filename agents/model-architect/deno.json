@@ -1,24 +1,20 @@
 {
+  "imports": {
+    "std/": "https://deno.land/std@0.220.1/",
+    "js-pytorch": "./src/utils/mock-pytorch.ts"
+  },
   "compilerOptions": {
     "allowJs": true,
-    "lib": ["deno.ns", "deno.window", "dom", "esnext"],
+    "lib": ["deno.window"],
     "strict": true,
-    "types": ["./src/types"]
+    "types": ["./src/types/deno.d.ts"]
   },
   "tasks": {
-    "start": "deno run --allow-net --allow-env src/autonomous.ts",
-    "interactive": "deno run --allow-net --allow-env src/interactive.ts"
-  },
-  "imports": {
-    "@types/deno": "npm:@types/deno"
-  },
-  "fmt": {
-    "options": {
-      "useTabs": false,
-      "lineWidth": 100,
-      "indentWidth": 2,
-      "singleQuote": false,
-      "proseWrap": "preserve"
-    }
+    "dev": "deno run --allow-net --allow-env --allow-write --allow-read",
+    "train": "deno run --allow-net --allow-env --allow-write --allow-read --config deno.json",
+    "optimize:auto:image": "deno run --allow-net --allow-env --allow-write --allow-read --config deno.json examples/optimize-cnn.ts",
+    "optimize:auto:text": "deno run --allow-net --allow-env --allow-write --allow-read --config deno.json examples/optimize-text.ts",
+    "optimize:interactive:image": "deno run --allow-net --allow-env --allow-write --allow-read --config deno.json examples/interactive-cnn.ts",
+    "optimize:interactive:text": "deno run --allow-net --allow-env --allow-write --allow-read --config deno.json examples/interactive-text.ts"
   }
 }

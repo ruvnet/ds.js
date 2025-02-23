@@ -1,165 +1,106 @@
 # Model Architect Examples
 
-This directory contains example scripts demonstrating how to use the Model Architect agents.
+This directory contains examples demonstrating how to use the Model Architect agent.
 
-## Prerequisites
+## Training and Exporting Models
 
-- Deno runtime installed
-- OpenRouter API key set in environment: `export OPENROUTER_API_KEY="your-key"`
+The `train-and-export.ts` example shows how to:
+1. Create a model architecture
+2. Train the model using js-pytorch
+3. Export the trained model to ONNX format
 
-## Examples
+### Usage
 
-### 1. Basic CNN Design (design-cnn.ts)
-
-Basic example demonstrating CNN architecture design in both autonomous and interactive modes.
-
+For testing with mock implementation:
 ```bash
-# Using deno task
-deno task cnn:auto
-deno task cnn:interactive
-
-# Or directly with deno run
-deno run --allow-net --allow-env design-cnn.ts auto
-deno run --allow-net --allow-env design-cnn.ts interactive
+USE_MOCK=true deno run --allow-net --allow-env --allow-write --allow-read --config deno.json examples/train-and-export.ts
 ```
 
-### 2. Advanced Model Optimization (optimize-cnn.ts)
-
-Advanced example demonstrating recursive optimization with Claude 3.5 Sonnet for both image and text classification tasks.
-
-#### Image Classification
+For actual training and export:
 ```bash
-# Autonomous mode
-deno task optimize:auto:image
-
-# Interactive mode
-deno task optimize:interactive:image
+deno run --allow-net --allow-env --allow-write --allow-read --config deno.json examples/train-and-export.ts
 ```
 
-Features:
-- Bayesian optimization of architecture
-- Hardware-aware constraints (GPU memory, utilization)
-- Layer fusion and quantization
-- Performance profiling
-- Early stopping
+### Prerequisites
 
-Example constraints:
+For actual training (when not using mock):
+1. Install js-pytorch:
+```bash
+npm install js-pytorch
+```
+
+2. Prepare your training data:
+- Create a custom Dataset class that extends torch.utils.data.Dataset
+- Implement the required methods (__len__, __getitem__)
+- Format your data to match the expected input shape (e.g., [3, 224, 224] for RGB images)
+
+Example dataset implementation:
 ```typescript
-{
-  maxParameters: 10_000_000,
-  minAccuracy: 0.95,
-  maxLatency: 50,  // ms
-  maxMemory: 1000,  // MB
-  powerBudget: 100,  // watts
-  quantization: {
-    precision: "fp16"
+class CustomDataset extends torch.utils.data.Dataset {
+  constructor(data: any[], labels: number[]) {
+    super();
+    this.data = data;
+    this.labels = labels;
+  }
+
+  __len__(): number {
+    return this.data.length;
+  }
+
+  __getitem__(idx: number): [torch.Tensor, torch.Tensor] {
+    // Preprocess your data here
+    const input = torch.tensor(this.data[idx]);
+    const label = torch.tensor([this.labels[idx]]);
+    return [input, label];
   }
 }
 ```
 
-#### Text Classification
-```bash
-# Autonomous mode
-deno task optimize:auto:text
+### Configuration
 
-# Interactive mode
-deno task optimize:interactive:text
-```
+The example supports two modes:
+- Testing mode (USE_MOCK=true): Uses mock implementation for testing the workflow
+- Training mode (USE_MOCK=false): Uses actual js-pytorch for training and export
 
-Features:
-- NLP-specific layer types (LSTM, GRU, etc.)
-- Sequence length optimization
-- Embedding size tuning
-- Memory-efficient transformations
+### Model Architecture
 
-Example constraints:
-```typescript
-{
-  maxParameters: 50_000_000,
-  minAccuracy: 0.90,
-  maxLatency: 200,
-  framework: "pytorch",
-  allowedLayerTypes: [
-    "Embedding",
-    "LSTM",
-    "GRU",
-    "Dense"
-  ]
-}
-```
+The example includes a sample CNN architecture for image classification:
+- 2 Conv2D layers with BatchNormalization and ReLU activation
+- 2 MaxPooling2D layers for downsampling
+- Dense layers with Dropout for classification
+- Configurable input/output shapes and layer parameters
 
-## Optimization Process
+### Export Format
 
-The optimization process follows these steps:
+The model is exported in ONNX format with:
+- Dynamic batch size support
+- Named input/output tensors
+- Accompanying metadata file containing:
+  - Task information
+  - Framework details
+  - Quantization settings
+  - Performance metrics
 
-1. Initial Architecture Design
-   - Based on task requirements
-   - Considers hardware constraints
-   - Uses proven architectures as starting points
+### Output Files
 
-2. Setting Optimization Goals
-   - Performance targets (accuracy, latency)
-   - Resource constraints (memory, power)
-   - Hardware utilization targets
+The example creates two files in the `models/image_classification` directory:
 
-3. Recursive Optimization
-   - Bayesian optimization of hyperparameters
-   - Architecture search with early stopping
-   - Layer fusion and quantization analysis
-   - Cross-validation for robustness
+1. `model.onnx`: Contains the model architecture in ONNX format
+2. `metadata.json`: Contains model metadata including:
+   - Task type (image_classification)
+   - Framework (pytorch)
+   - Quantization settings
+   - Performance metrics (parameter count, latency, throughput, etc.)
 
-4. Interactive Feedback (in interactive mode)
-   - Review and modify architectures
-   - Adjust optimization constraints
-   - Fine-tune quantization settings
-   - Control ONNX export options
+### Customization
 
-## Example Output
+To customize the model:
+1. Modify the architecture configuration in `train-and-export.ts`
+2. Adjust training parameters (epochs, batch size, learning rate)
+3. Update the metadata to match your model's characteristics
+4. Implement your own Dataset class for data loading and preprocessing
 
-The optimization process provides detailed metrics and visualizations:
+### Other Examples
 
-```json
-{
-  "metrics": {
-    "accuracy": 0.956,
-    "latency": 45.2,
-    "memory": 850,
-    "parameters": 8500000,
-    "throughput": 120
-  },
-  "analysis": {
-    "bottlenecks": [
-      {
-        "layer": "Conv2D_3",
-        "metric": "memory",
-        "value": 256,
-        "recommendation": "Reduce filter count"
-      }
-    ],
-    "suggestions": [
-      {
-        "type": "architecture",
-        "description": "Fuse Conv2D+BatchNorm layers",
-        "expectedImpact": {
-          "metric": "latency",
-          "improvement": 15
-        }
-      }
-    ]
-  }
-}
-```
-
-## Adding New Examples
-
-To add a new example:
-1. Create a new TypeScript file in this directory
-2. Add corresponding tasks to deno.json if needed
-3. Update this README with usage instructions
-
-## Notes
-
-- All examples support both autonomous and interactive modes
-- Optimization goals are customizable through constraints
-- ONNX export is optional but recommended for deployment
-- Hardware-specific optimizations require appropriate constraints
+- `design-cnn.ts`: Demonstrates using the Model Architect agent to design CNN architectures
+- `optimize-cnn.ts`: Shows how to optimize model architectures for specific constraints

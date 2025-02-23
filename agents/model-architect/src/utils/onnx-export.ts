@@ -1,40 +1,58 @@
 import type { ModelArchitecture } from "../types/index.ts";
-import { torch } from "./mock-pytorch.ts";
-import { ensureDir } from "https://deno.land/std@0.220.1/fs/mod.ts";
-import { join } from "https://deno.land/std@0.220.1/path/mod.ts";
+import { torch } from "js-pytorch";
+import { ensureDir } from "std/fs/ensure_dir.ts";
+import { join } from "std/path/mod.ts";
 
-interface Conv2DLayer {
+interface BaseLayer {
+  type: string;
+  inChannels?: number;
+  filters?: number;
+  kernelSize?: [number, number];
+  activation?: string;
+  units?: number;
+  rate?: number;
+}
+
+interface Conv2DLayer extends BaseLayer {
   type: "Conv2D";
   filters: number;
   kernelSize: [number, number];
   activation?: string;
 }
 
-interface MaxPooling2DLayer {
+interface MaxPooling2DLayer extends BaseLayer {
   type: "MaxPooling2D";
   kernelSize: [number, number];
 }
 
-interface BatchNormalizationLayer {
+interface BatchNormalizationLayer extends BaseLayer {
   type: "BatchNormalization";
 }
 
-interface FlattenLayer {
+interface FlattenLayer extends BaseLayer {
   type: "Flatten";
 }
 
-interface DenseLayer {
+interface DenseLayer extends BaseLayer {
   type: "Dense";
   units: number;
   activation?: string;
 }
 
-interface DropoutLayer {
+interface DropoutLayer extends BaseLayer {
   type: "Dropout";
   rate: number;
 }
 
 type Layer = Conv2DLayer | MaxPooling2DLayer | BatchNormalizationLayer | FlattenLayer | DenseLayer | DropoutLayer;
+
+function isConv2DLayer(layer: Layer): layer is Conv2DLayer {
+  return layer.type === "Conv2D";
+}
+
+function isDenseLayer(layer: Layer): layer is DenseLayer {
+  return layer.type === "Dense";
+}
 
 class Model extends torch.nn.Module {
   layers: torch.nn.Module[];
@@ -44,22 +62,36 @@ class Model extends torch.nn.Module {
     this.layers = this.buildLayers(architecture.layers as Layer[]);
   }
 
-  forward(x: any): any {
+  forward(x: torch.Tensor): torch.Tensor {
     for (const layer of this.layers) {
       x = layer.forward(x);
     }
     return x;
   }
 
+  parameters(): torch.Parameter[] {
+    return [];
+  }
+
+  train(): void {}
+
   private buildLayers(layers: Layer[]): torch.nn.Module[] {
     const modules: torch.nn.Module[] = [];
     
     for (let i = 0; i < layers.length; i++) {
       const layer = layers[i];
+      const prevLayer = i > 0 ? layers[i-1] : null;
       
       switch (layer.type) {
         case "Conv2D": {
-          const conv = new torch.nn.Conv2D(layer.filters, layer.kernelSize);
+          const inChannels = layer.inChannels || (i === 0 ? 3 : prevLayer?.filters);
+          if (!inChannels) throw new Error("Could not determine input channels for Conv2D layer");
+          
+          const conv = new torch.nn.Conv2d(
+            inChannels,
+            layer.filters,
+            layer.kernelSize
+          );
           modules.push(conv);
           if (layer.activation === "relu") {
             modules.push(new torch.nn.ReLU());
@@ -67,17 +99,26 @@ class Model extends torch.nn.Module {
           break;
         }
         case "MaxPooling2D": {
-          const pool = new torch.nn.MaxPooling2D(layer.kernelSize);
+          const pool = new torch.nn.MaxPool2d(layer.kernelSize);
           modules.push(pool);
           break;
         }
+        case "BatchNormalization": {
+          const features = i === 0 ? 3 : prevLayer?.filters;
+          if (!features) throw new Error("Could not determine features for BatchNorm layer");
+          
+          const bn = new torch.nn.BatchNorm2d(features);
+          modules.push(bn);
+          break;
+        }
         case "Flatten": {
-          const flatten = new torch.nn.Flatten();
-          modules.push(flatten);
+          modules.push(new torch.nn.Flatten());
           break;
         }
         case "Dense": {
-          const inFeatures = i === 0 ? 1 : (layers[i-1] as DenseLayer).units ?? (layers[i-1] as Conv2DLayer).filters;
+          const inFeatures = i === 0 ? 1 : prevLayer?.units ?? prevLayer?.filters;
+          if (!inFeatures) throw new Error("Could not determine input features for Dense layer");
+          
           const linear = new torch.nn.Linear(inFeatures, layer.units);
           modules.push(linear);
           if (layer.activation === "relu") {
@@ -85,9 +126,10 @@ class Model extends torch.nn.Module {
           }
           break;
         }
-        default:
-          console.warn(`Layer type ${layer.type} not yet supported in js-pytorch`);
+        case "Dropout": {
+          modules.push(new torch.nn.Dropout(layer.rate));
           break;
+        }
       }
     }
 
@@ -108,18 +150,27 @@ export async function exportToOnnx(
     const model = new Model(architecture);
     
     // Create dummy input tensor
-    const dummyInput = torch.tensor(
-      new Array(architecture.inputShape.reduce((a: number, b: number) => a * b, 1)).fill(0),
-      false
-    );
+    const dummyInput = torch.randn(architecture.inputShape);
 
-    // Create output directory and save files
+    // Create output directory
     try {
       // Create directory
       await ensureDir(outputPath);
       
       // Save model
-      await torch.save(model, join(outputPath, 'model.onnx'));
+      await torch.onnx.exportModel(
+        model,
+        dummyInput,
+        join(outputPath, 'model.onnx'),
+        {
+          input_names: ['input'],
+          output_names: ['output'],
+          dynamic_axes: {
+            'input': {0: 'batch_size'},
+            'output': {0: 'batch_size'}
+          }
+        }
+      );
       
       // Save metadata
       await Deno.writeTextFile(
