@@ -1,0 +1,8 @@
+{
+  "tasks": {
+    "start": "deno run --allow-net --allow-env hello.ts"
+  },
+  "imports": {
+    "@langchain/langgraph": "npm:@langchain/langgraph@0.0.5"
+  }
+}

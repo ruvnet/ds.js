@@ -1,42 +1,23 @@
+/// <reference lib="deno.ns" />
+
 /**
  * Single File ReAct Agent Template (Deno)
  * 
  * This agent follows the ReACT (Reasoning + Acting) logic pattern, integrates with the OpenRouter API for LLM interactions,
- * and supports tool usage within a structured agent framework. It is designed as a single-file TypeScript script for Deno,
- * optimized for minimal latency in serverless environments like Fly.io and Supabase Edge Functions.
+ * and supports tool usage within a structured agent framework. It is designed as a single-file TypeScript script for Deno.
  * 
  * ## Setup
- * - Ensure you have a Deno runtime available (e.g., in your serverless environment).
+ * - Ensure you have a Deno runtime available
  * - Set the environment variable `OPENROUTER_API_KEY` with your OpenRouter API key.
  * - (Optional) Set `OPENROUTER_MODEL` to specify the model (default is "openai/o3-mini-high").
  * - This script requires network access to call the OpenRouter API. When running with Deno, use `--allow-net` (and `--allow-env` to read env variables).
  * 
- * ## Deployment (Fly.io)
- * 1. Create a Dockerfile using a Deno base image (e.g. `denoland/deno:alpine`).
- *    - In the Dockerfile, copy this script into the image and use `CMD ["run", \"--allow-net\", \"--allow-env\", \"agent.ts\"]`.
- * 2. Set the `OPENROUTER_API_KEY` as a secret on Fly.io (e.g., `fly secrets set OPENROUTER_API_KEY=your_key`).
- * 3. Deploy with `fly deploy`. The app will start an HTTP server on port 8000 by default (adjust Fly.io config for port if needed).
- * 
- * ## Deployment (Supabase Edge Functions)
- * 1. Install the Supabase CLI and login to your project.
- * 2. Create a new Edge Function: `supabase functions new myagent`.
- * 3. Replace the content of the generated `index.ts` with this entire script.
- * 4. Ensure to add your OpenRouter API key: run `supabase secrets set OPENROUTER_API_KEY=your_key` for the function's environment.
- * 5. Deploy the function: `supabase functions deploy myagent --no-verify-jwt` (the `--no-verify-jwt` flag disables authentication if you want the function public).
- * 6. The function will be accessible at the URL provided by Supabase (e.g., `https://<project>.functions.supabase.co/myagent`).
- * 
  * ## Usage
- * Send an HTTP POST request to the deployed endpoint with a JSON body: `{ "query": "your question" }`.
- * The response will be a JSON object: `{ "answer": "the answer from the agent" }`.
- * 
- * ## Notes
- * - The agent uses a ReACT loop: it will reason and decide on actions (tool uses) before giving the final answer.
- * - Tools are defined in the code (see the `tools` array). The model is instructed on how to use them.
- * - The OpenRouter API is used similarly to OpenAI's Chat Completion API. Make sure your model supports the desired functionality.
- * - This template is optimized for clarity and minimal dependencies. It avoids large libraries for faster cold starts.
+ * Run the script with your query as command line arguments:
+ * ```
+ * deno run --allow-net --allow-env hello.ts "what is 2 + 2?"
+ * ```
  */
-import { serve } from "https://deno.land/std@0.192.0/http/server.ts";
-import { StateGraph, END } from "npm:@langchain/langgraph@0.0.5";
 
 const API_KEY = Deno.env.get("OPENROUTER_API_KEY");
 const MODEL   = Deno.env.get("OPENROUTER_MODEL") || "openai/o3-mini-high";
@@ -145,6 +126,8 @@ async function runAgent(query: string): Promise<string> {
   for (let step = 0; step < 10; step++) {
     // Call the LLM via OpenRouter
     const assistantReply = await callOpenRouter(messages);
+    // Print the assistant's thought process
+    console.log(assistantReply.split("Answer:")[0].trim());
     // Append the assistant's reply to the message history
     messages.push({ role: "assistant", content: assistantReply });
     // Check if the assistant's reply contains a final answer
@@ -171,6 +154,8 @@ async function runAgent(query: string): Promise<string> {
           observation = `Error: ${(err as Error).message}`;
         }
       }
+      // Print the observation
+      console.log("Observation:", observation);
       // Append the observation as a system message for the next LLM call
       messages.push({ role: "system", content: `Observation: ${observation}` });
       // Continue loop for next reasoning step with the new observation in context
@@ -183,41 +168,20 @@ async function runAgent(query: string): Promise<string> {
   throw new Error("Agent did not produce a final answer within the step limit.");
 }
 
-// Start an HTTP server (for serverless usage) that listens for POST requests with a JSON query.
-serve(async (req: Request) => {
-  if (req.method === "GET") {
-    return new Response(JSON.stringify({
-      message: "Welcome to the Single File ReAct Agent!",
-      usage: "Send a POST request with JSON body: { \"query\": \"your question\" }"
-    }), {
-      headers: { "Content-Type": "application/json" }
-    });
-  }
-  if (req.method !== "POST") {
-    return new Response("Method Not Allowed", { status: 405 });
-  }
-  let query: string;
-  try {
-    const data = await req.json();
-    query = data.query ?? data.question;
-  } catch {
-    return new Response("Invalid JSON body", { status: 400 });
-  }
-  if (!query || typeof query !== "string") {
-    return new Response(`Bad Request: Missing "query" string.`, { status: 400 });
-  }
-  try {
-    const answer = await runAgent(query);
-    const responseData = { answer };
-    return new Response(JSON.stringify(responseData), {
-      headers: { "Content-Type": "application/json" }
-    });
-  } catch (err) {
-    console.error("Agent error:", err);
-    const errorMsg = (err as Error).message || String(err);
-    return new Response(JSON.stringify({ error: errorMsg }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" }
-    });
-  }
-});
+// Get the query from command line arguments
+const query = Deno.args.join(" ");
+if (!query) {
+  console.error("Error: Please provide a query as command line argument.");
+  console.error("Example: deno run --allow-net --allow-env hello.ts \"what is 2 + 2?\"");
+  Deno.exit(1);
+}
+
+// Run the agent with the query
+runAgent(query)
+  .then(answer => {
+    console.log("\nAnswer:", answer);
+  })
+  .catch(err => {
+    console.error("Error:", err.message);
+    Deno.exit(1);
+  });

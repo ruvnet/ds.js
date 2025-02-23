@@ -1,0 +1,19 @@
+{
+  "name": "dspy-ts",
+  "version": "0.1.0",
+  "description": "TypeScript port of DSPy for declarative LM pipelines",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "dependencies": {
+    "onnxruntime-web": "^1.17.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0"
+  }
+}

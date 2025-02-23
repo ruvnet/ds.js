@@ -1,0 +1,16 @@
+{
+  "tasks": {
+    "optimize:auto:image": "deno run --allow-net --allow-env --allow-read --allow-write optimize-cnn.ts auto image_classification",
+    "optimize:auto:text": "deno run --allow-net --allow-env --allow-read --allow-write optimize-cnn.ts auto text_classification",
+    "optimize:interactive:image": "deno run --allow-net --allow-env --allow-read --allow-write optimize-cnn.ts interactive image_classification",
+    "optimize:interactive:text": "deno run --allow-net --allow-env --allow-read --allow-write optimize-cnn.ts interactive text_classification"
+  },
+  "compilerOptions": {
+    "lib": ["deno.ns", "deno.window", "dom", "esnext"],
+    "strict": true,
+    "types": ["../src/types"]
+  },
+  "imports": {
+    "onnxruntime-web": "npm:onnxruntime-web@^1.20.1"
+  }
+}
